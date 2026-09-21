@@ -1,8 +1,10 @@
 import time
+from pprint import pp
 
 import pywinctl as pwc
 
 from devpulse.decorators import start_time_stamp
+from devpulse.models import ActivitySession
 
 
 @start_time_stamp
@@ -19,7 +21,21 @@ previous_handle = None
 previous_app_name = None
 previous_pid = None
 previous_start_time = None
+observed_at = None
 session = []
+
+
+def create_active_session(application, pid, window_handle, window_title, start_time, end_time):
+    session.append(ActivitySession(
+        application=application,
+        pid=pid,
+        window_handle=window_handle,
+        window_title=window_title,
+        start_time=start_time,
+        end_time=end_time,
+        duration=end_time - start_time
+    ))
+
 
 try:
     while True:
@@ -30,16 +46,15 @@ try:
         current_app_name = current_window.getAppName() if current_window else None
 
         if current_title and (current_handle != previous_handle or current_title != previous_title):
-            if previous_title and previous_start_time:
-                session.append({
-                    "application": previous_app_name,
-                    "pid": previous_pid,
-                    "window_handle": previous_handle,
-                    "window_title": previous_title,
-                    "start_time": previous_start_time,
-                    "end_time": observed_at,
-                    "duration": observed_at - previous_start_time
-                })
+            if previous_title and previous_start_time and previous_handle and previous_pid and previous_app_name:
+                create_active_session(
+                    application=previous_app_name,
+                    pid=previous_pid,
+                    window_handle=previous_handle,
+                    window_title=previous_title,
+                    start_time=previous_start_time,
+                    end_time=observed_at
+                )
 
             print(
                 f"Focused window title changed: {current_window.title} at {observed_at}")
@@ -50,8 +65,17 @@ try:
             previous_app_name = current_app_name
             previous_start_time = observed_at
 
-        time.sleep(0.25)
+        time.sleep(1)
 except KeyboardInterrupt:
     print("Exiting...")
 finally:
-    print(session)
+    if previous_title and previous_start_time and previous_handle and previous_pid and previous_app_name and observed_at:
+        create_active_session(
+            application=previous_app_name,
+            pid=previous_pid,
+            window_handle=previous_handle,
+            window_title=previous_title,
+            start_time=previous_start_time,
+            end_time=observed_at
+        )
+    pp(session)
