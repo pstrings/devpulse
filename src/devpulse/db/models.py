@@ -6,7 +6,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class Activity_Session(Base):
+class ActivitySession(Base):
     __tablename__ = 'activity_sessions'
 
     id = Column(Integer, primary_key=True, autoincrement=True)

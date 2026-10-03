@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 
 @dataclass
-class ActivitySession:
+class ActivitySessionData:
     application: str
     pid: int
     window_handle: int

@@ -3,8 +3,9 @@ from pprint import pp
 
 import pywinctl as pwc
 
+from devpulse.db.database import save_sessions
 from devpulse.decorators import start_time_stamp
-from devpulse.models import ActivitySession
+from devpulse.models import ActivitySessionData
 
 
 @start_time_stamp
@@ -22,11 +23,11 @@ previous_app_name = None
 previous_pid = None
 previous_start_time = None
 observed_at = None
-session = []
+sessions = []
 
 
 def create_active_session(application, pid, window_handle, window_title, start_time, end_time):
-    session.append(ActivitySession(
+    sessions.append(ActivitySessionData(
         application=application,
         pid=pid,
         window_handle=window_handle,
@@ -80,4 +81,6 @@ finally:
             start_time=previous_start_time,
             end_time=observed_at
         )
-    pp(session)
+    pp(sessions)
+    save_sessions(sessions)
+    print("Sessions saved to the database.")
