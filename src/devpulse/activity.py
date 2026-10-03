@@ -33,13 +33,14 @@ def create_active_session(application, pid, window_handle, window_title, start_t
         window_title=window_title,
         start_time=start_time,
         end_time=end_time,
-        duration=end_time - start_time
+        duration=(end_time - start_time).total_seconds()
     ))
 
 
 try:
     while True:
         current_window, observed_at = get_active_window()
+
         current_title = current_window.title if current_window else None
         current_handle = current_window.getHandle() if current_window else None
         current_pid = current_window.getPID() if current_window else None
@@ -56,6 +57,7 @@ try:
                     end_time=observed_at
                 )
 
+            assert current_window is not None
             print(
                 f"Focused window title changed: {current_window.title} at {observed_at}")
 

@@ -12,6 +12,7 @@ dependencies = [
     "numpy>=2.5.3",
     "pandas>=3.0.6",
     "pywinctl>=0.4.1",
+    "sqlalchemy>=2.1.3",
 ]
 
 [project.scripts]
