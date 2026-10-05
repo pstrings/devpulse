@@ -1,6 +1,9 @@
 import pandas as pd
 
-from devpulse.analytics.activity import add_productivity_metrics, calculate_application_stats
+from devpulse.analytics.activity import (
+    add_productivity_metrics,
+    calculate_application_stats,
+)
 
 
 def test_calculate_application_stats():
