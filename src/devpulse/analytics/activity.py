@@ -1,6 +1,7 @@
 import pandas as pd
 
 from devpulse.db.models import ActivitySession
+from devpulse.models import ActivitySessionData
 
 PRODUCTIVE_APPLICATIONS = {
     "Code.exe",
@@ -118,7 +119,10 @@ def calculate_application_stats(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     application_stats["total_minutes"] = (
-        application_stats["total_duration"] / 60)
+        pd.to_timedelta(application_stats["total_duration"])
+        .dt.total_seconds()
+        / 60
+    )
 
     application_stats["avg_session_duration"] = (
         application_stats["total_duration"] / application_stats["session_count"])
@@ -150,3 +154,19 @@ def add_productivity_metrics(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return df
+
+
+def analyze_sessions(sessions: list[ActivitySessionData]) -> dict:
+    """
+    Run the complete analytics pipeline on activity sessions.
+
+    Returns:
+        dict containing the prepared session data and application statistics.
+    """
+    df = prepare_sessions(sessions)
+    application_stats = calculate_application_stats(df)
+
+    return {
+        "sessions": df,
+        "application_stats": application_stats,
+    }
